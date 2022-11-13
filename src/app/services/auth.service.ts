@@ -25,6 +25,9 @@ export class AuthService {
         this.userData = user;
         localStorage.setItem('user', JSON.stringify(this.userData));
         JSON.parse(localStorage.getItem('user')!);
+        if (this.router.url !== '/verification') {
+          this.router.navigate(['dashboard'])
+        }
       } else {
         localStorage.setItem('user', 'null');
         JSON.parse(localStorage.getItem('user')!);
@@ -32,22 +35,15 @@ export class AuthService {
     });
   }
 
-  // Sign in with email/password
-  login(email: string, password: string) {
-    return this.afAuth
-      .signInWithEmailAndPassword(email, password)
-      .then((result) => {
-        this.setUserData(result.user);
-        this.afAuth.authState.subscribe((user) => {
-          console.log(user)
-          if (user) {
-            this.router.navigate(['dashboard']);
-          }
-        });
-      })
-      .catch((error) => {
-        alert(error.message);
-      });
+  // Login with email/password
+  async login(email: string, password: string) {
+    try {
+      const result = await this.afAuth
+        .signInWithEmailAndPassword(email, password);
+      this.setUserData(result.user);
+    } catch (error: any) {
+      alert(error.message);
+    }
   }
 
   // Register with email/password
@@ -55,10 +51,8 @@ export class AuthService {
     try {
       const result = await this.afAuth
         .createUserWithEmailAndPassword(email.value, password.value);
-      /* Call the sendVerificationMail() function when new user sign
-      up and returns promise */
-      await this.sendVerificationMail();
-      await this.setUserData(result.user);
+      this.sendVerificationMail();
+      this.setUserData(result.user);
     } catch (error: any) {
       alert(error.message);
       email.value = '';
@@ -67,12 +61,10 @@ export class AuthService {
   }
 
   // Send email verification when new user sign up
-  sendVerificationMail() {
-    return this.afAuth.currentUser
-      .then((u: any) => u.sendEmailVerification())
-      .then(() => {
-        this.router.navigate(['verification']);
-      });
+  async sendVerificationMail() {
+    const u = await this.afAuth.currentUser;
+    u!.sendEmailVerification();
+    this.router.navigate(['verification']);
   }
 
   // Reset Forgot password
@@ -104,8 +96,8 @@ export class AuthService {
     try {
       const result = await this.afAuth
         .signInWithPopup(provider);
-      this.router.navigate(['dashboard']);
       this.setUserData(result.user);
+      this.router.navigate(['dashboard']);
     } catch (error) {
       alert(error);
     }
