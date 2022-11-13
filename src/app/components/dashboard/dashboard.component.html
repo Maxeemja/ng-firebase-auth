@@ -1,1 +1,37 @@
-<p>dashboard works!</p>
+<!-- Top navigation -->
+<nav class="navbar navbar-dark bg-dark flex-md-nowrap px-3 shadow justify-content-between">
+  <a class="col-sm-3 col-md-2 mr-0 d-flex justify-content-center">
+    <img class="w-25" src="assets/angular-icon.svg" alt="angular Logo">
+  </a>
+  <div class="text-white btn btn-link" (click)="authService.logout()">
+    Logout
+  </div>
+</nav>
+<!-- Sidebar navigation -->
+<div class="w-75 container-fluid">
+  <!-- Main content -->
+  <main role="main" class="px-4">
+    <div class="inner-adjust">
+      <div class="pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">User Profile</h1>
+      </div>
+      <!-- Show user data when logged in -->
+      <div class="row" *ngIf="authService.userData as user">
+        <div class="col-md-12">
+          <div class="d-flex justify-content-start gap-5">
+            <img class="align-self-start mr-5 img-thumbnail rounded-circle"
+                 src="{{(user.photoURL) ? user.photoURL : 'assets/icons8-male-user-64.png'}}"
+                 alt="{{user.displayName}}">
+            <div class="media-body">
+              <h1>Hello: <strong>{{(user.displayName) ? user.displayName : 'User'}}</strong></h1>
+              <p>User ID: <strong>{{user.uid}}</strong></p>
+              <p>Email: <strong>{{user.email}}</strong></p>
+              <p>Email Verified: <strong>{{user.emailVerified}}</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
